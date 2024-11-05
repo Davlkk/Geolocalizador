@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geolocalizador Google Maps</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f2f5;
+        }
+
+        .titulo {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .formulario-geolocalizacao {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .campo-endereco {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 5px;
+        }
+
+        .botao-localizar {
+            padding: 10px 20px;
+            border: none;
+            background-color: #4285f4;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .botao-localizar:hover {
+            background-color: #357ae8;
+        }
+
+        .mapa-container {
+            height: 400px;
+            width: 100%;
+            max-width: 600px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <h1 class="titulo">Geolocalizador</h1>
+    <div class="formulario-geolocalizacao">
+        <label for="input-endereco">Digite o endereço:</label><br>
+        <input type="text" id="input-endereco" class="campo-endereco">
+        <button id="botao-localizar" class="botao-localizar" onclick="localizarEndereco()">Localizar</button>
+    </div>
+    <div id="mapa-google" class="mapa-container"></div>
+
+    <script>
+        let mapaGoogle;
+        let codificadorEndereco;
+
+        function iniciarMapaGoogle() {
+            mapaGoogle = new google.maps.Map(document.getElementById("mapa-google"), {
+                center: { lat: -29.6422, lng: -50.7956 },
+                zoom: 10,
+            });
+            codificadorEndereco = new google.maps.Geocoder();
+        }
+
+        function localizarEndereco() {
+            const endereco = document.getElementById("input-endereco").value;
+
+            codificadorEndereco.geocode({ address: endereco }, (resultados, status) => {
+                if (status === "OK") {
+                    mapaGoogle.setCenter(resultados[0].geometry.location);
+                    mapaGoogle.setZoom(15);
+
+                    new google.maps.Marker({
+                        map: mapaGoogle,
+                        position: resultados[0].geometry.location,
+                    });
+                } else {
+                    alert("Geolocalização falhou: " + status);
+                }
+            });
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCmWmhjL1rJYhK9CVjb56wDPOem8aDBN3M&callback=iniciarMapaGoogle" async defer></script>
+</body>
+</html>
